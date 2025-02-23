@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGYSA Artist Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCze7QRkMZEb4UNXBgMNfQqL-07mJ3U-z4",
+            authDomain: "ngysa-auth.firebaseapp.com",
+            projectId: "ngysa-auth",
+            storageBucket: "ngysa-auth.firebasestorage.app",
+            messagingSenderId: "655947183500",
+            appId: "1:655947183500:web:58cebefbc1f5363ad9d2a9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("login-btn").addEventListener("click", () => {
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        document.getElementById("auth-section").style.display = "none";
+                        document.getElementById("dashboard").classList.remove("hidden");
+                        document.getElementById("username").textContent = userCredential.user.email;
+                    })
+                    .catch((error) => alert("Login failed: " + error.message));
+            });
+
+            document.getElementById("logout-btn").addEventListener("click", () => {
+                signOut(auth).then(() => {
+                    document.getElementById("dashboard").classList.add("hidden");
+                    document.getElementById("auth-section").style.display = "flex";
+                }).catch((error) => alert("Logout failed: " + error.message));
+            });
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById("auth-section").style.display = "none";
+                    document.getElementById("dashboard").classList.remove("hidden");
+                    document.getElementById("username").textContent = user.email;
+                }
+            });
+        });
+    </script>
+    <style>
+        .form-container {
+            width: 90%;
+            height: 80vh;
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .form-container iframe {
+            width: 100%;
+            height: 90%;
+            border: none;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Authentication Section -->
+    <div id="auth-section" class="flex justify-center items-center h-screen">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-2xl font-bold text-center">Login</h2>
+            <input id="email" type="email" placeholder="Email" class="w-full p-2 mt-3 border rounded" required>
+            <input id="password" type="password" placeholder="Password" class="w-full p-2 mt-3 border rounded" required>
+            <button id="login-btn" class="w-full mt-4 bg-blue-600 text-white p-2 rounded">Login</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="hidden">
+        <nav class="bg-blue-600 text-white p-4 flex justify-between">
+            <button id="sidebar-toggle" class="text-2xl">&#9776;</button>
+            <h1>NGYSA Artist Dashboard</h1>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white p-4 transform -translate-x-full transition-transform">
+            <button id="close-sidebar" class="text-xl absolute top-4 right-4">&times;</button>
+            <h2 class="text-center text-2xl font-bold">Menu</h2>
+            <p class="text-center font-bold">Welcome, <span id="username"></span></p>
+            <hr class="my-4 border-gray-600">
+            <button onclick="toggleForm('create-release')" class="block py-2 px-4 w-full text-left hover:bg-gray-700">Create New Release</button>
+            <button onclick="toggleForm('request-takedown')" class="block py-2 px-4 w-full text-left hover:bg-gray-700">Request Takedown</button>
+            <button onclick="toggleForm('contact-support')" class="block py-2 px-4 w-full text-left hover:bg-gray-700">Contact Support</button>
+            <button onclick="toggleForm('lyrics-sync')" class="block py-2 px-4 w-full text-left hover:bg-gray-700">Lyrics Sync</button>
+            <button onclick="toggleForm('request-royalties')" class="block py-2 px-4 w-full text-left hover:bg-gray-700">Request Royalties</button>
+            <button onclick="toggleForm('manage-release')" class="block py-2 px-4 w-full text-left hover:bg-gray-700">Manage Release</button>
+            <button id="logout-btn" class="block py-2 px-4 bg-red-600 hover:bg-red-700 text-center rounded mt-4 w-full">Logout</button>
+        </div>
+
+        <!-- Forms -->
+        <div id="create-release" class="form-container">
+            <span class="close-btn" onclick="closeForm('create-release')">&times;</span>
+            <iframe src="https://surveyheart.com/form/67b9dbe401fc1a603108da1c"></iframe>
+        </div>
+
+        <div id="lyrics-sync" class="form-container">
+            <span class="close-btn" onclick="closeForm('lyrics-sync')">&times;</span>
+            <iframe src="https://surveyheart.com/form/67ba029201fc1a60310ad987"></iframe>
+        </div>
+
+        <div id="contact-support" class="form-container">
+            <span class="close-btn" onclick="closeForm('contact-support')">&times;</span>
+            <div class="powr-form-builder" id="56362f55-e603-4899-b49f-8b2b839e0ea6"></div>
+            <script src="https://www.powr.io/powr.js?platform=html"></script>
+        </div>
+
+        <div id="manage-release" class="form-container">
+            <span class="close-btn" onclick="closeForm('manage-release')">&times;</span>
+            <table class="w-full border">
+                <tr><th>Artist Name</th><th>Song Title</th><th>UPC</th><th>ISRC</th></tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function toggleForm(formId) {
+            document.getElementById(formId).style.display = "block";
+        }
+
+        function closeForm(formId) {
+            document.getElementById(formId).style.display = "none";
+        }
+
+        document.getElementById("sidebar-toggle").addEventListener("click", () => {
+            document.getElementById("sidebar").classList.toggle("-translate-x-full");
+        });
+
+        document.getElementById("close-sidebar").addEventListener("click", () => {
+            document.getElementById("sidebar").classList.add("-translate-x-full");
+        });
+    </script>
+
+</body>
+</html>
